@@ -1,11 +1,11 @@
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\MDK\Boards\ST\STM32F429I-Discovery\Common\LED_F429Discovery.c
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal.h
-.\debug\led_f429discovery.o: .\RTE\Device\STM32F407IGHx\stm32f4xx_hal_conf.h
+.\debug\led_f429discovery.o: .\RTE\Device\STM32F429ZITx\stm32f4xx_hal_conf.h
 .\debug\led_f429discovery.o: .\RTE\_Debug\RTE_Components.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_rcc.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_def.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
-.\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h
+.\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f429xx.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include\core_cm4.h
 .\debug\led_f429discovery.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include\cmsis_version.h
@@ -27,7 +27,10 @@
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_flash_ex.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_flash_ramfunc.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_sram.h
-.\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_ll_fsmc.h
+.\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_ll_fmc.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_pwr.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_pwr_ex.h
+.\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_spi.h
+.\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim.h
+.\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim_ex.h
 .\debug\led_f429discovery.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.13.0\Board\Board_LED.h

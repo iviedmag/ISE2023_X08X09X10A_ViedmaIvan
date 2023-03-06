@@ -12,7 +12,8 @@
 #include "cmsis_os2.h"                  // ::CMSIS:RTOS2
 #include "rl_net.h"                     // Keil.MDK-Pro::Network:CORE
 
-#include "Board_LED.h"                  // ::Board Support:LED
+#include "LEDS_STM32F429ZI.h"              
+
 
 #if      defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
 #pragma  clang diagnostic push
@@ -101,15 +102,22 @@ void netCGI_ProcessQuery (const char *qstr) {
 //            - 4 = any XML encoded POST data (single or last stream).
 //            - 5 = the same as 4, but with more XML data to follow.
 void netCGI_ProcessData (uint8_t code, const char *data, uint32_t len) {
-  char var[40],passw[12];
+	
+	// 'var' es utilizada es utilizada para almacenar el nombre de las variables de entorno HTTP recibidas en la solicitud POST,
+	// se le asigna una longitud de 40 caracteres, lo que significa que puede almacenar variables de entorno HTTP con un máximo de 39 caracteres,
+  // ya que el último carácter siempre se establecerá en '\0'.
+	
+	// 'passw' es utilizada para almacenar temporalmente las contraseñas ingresadas en el formulario web. 
+	// se le asigna una longitud de 12 caracteres. Esto significa que las contraseñas pueden tener hasta 11 caracteres, y el último carácter siempre será '\0'.
+  char var[40],passw[12]; 
 
   if (code != 0) {
     // Ignore all other codes
     return;
   }
 
-  P2 = 0;
-  LEDrun = true;
+  P2 = 0;																														// Contiene el valor decimal con el que se estableceran los leds pasando ese numeroa  binario
+  LEDrun = true;  																									//Se usa para establecer el encendido o el apagado de los LEDS
   if (len == 0) {
     // No data or all items (radio, checkbox) are off
     LED_SetOut (P2);
@@ -118,7 +126,7 @@ void netCGI_ProcessData (uint8_t code, const char *data, uint32_t len) {
   passw[0] = 1;
   do {
     // Parse all parameters
-    data = netCGI_GetEnvVar (data, var, sizeof (var));
+    data = netCGI_GetEnvVar (data, var, sizeof (var)); 							//Se utiliza para obtener el valor de una variable de entorno en una solicitud HTTP POST.
     if (var[0] != 0) {
       // First character is non-null, string exists
       if (strcmp (var, "led0=on") == 0) {
@@ -129,21 +137,6 @@ void netCGI_ProcessData (uint8_t code, const char *data, uint32_t len) {
       }
       else if (strcmp (var, "led2=on") == 0) {
         P2 |= 0x04;
-      }
-      else if (strcmp (var, "led3=on") == 0) {
-        P2 |= 0x08;
-      }
-      else if (strcmp (var, "led4=on") == 0) {
-        P2 |= 0x10;
-      }
-      else if (strcmp (var, "led5=on") == 0) {
-        P2 |= 0x20;
-      }
-      else if (strcmp (var, "led6=on") == 0) {
-        P2 |= 0x40;
-      }
-      else if (strcmp (var, "led7=on") == 0) {
-        P2 |= 0x80;
       }
       else if (strcmp (var, "ctrl=Browser") == 0) {
         LEDrun = false;
@@ -165,11 +158,13 @@ void netCGI_ProcessData (uint8_t code, const char *data, uint32_t len) {
         // LCD Module line 1 text
         strcpy (lcd_text[0], var+5);
         osThreadFlagsSet (TID_Display, 0x01);
+        //LCDupdate = true;
       }
       else if (strncmp (var, "lcd2=", 5) == 0) {
         // LCD Module line 2 text
         strcpy (lcd_text[1], var+5);
         osThreadFlagsSet (TID_Display, 0x01);
+        //LCDupdate = true;
       }
     }
   } while (data);
@@ -349,11 +344,11 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
       // AD Input from 'ad.cgi'
       switch (env[2]) {
         case '1':
-          //adv = AD_in (0);
+          adv = AD_in (0);
           len = (uint32_t)sprintf (buf, &env[4], adv);
           break;
         case '2':
-          len = (uint32_t)sprintf (buf, &env[4], (double)((float)adv*3.3f)/4096);
+          //len = (uint32_t)sprintf (buf, &env[4], (double)((float)adv*3.3f)/4096);
           break;
         case '3':
           adv = (adv * 100) / 4096;
@@ -364,14 +359,13 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
 
     case 'x':
       // AD Input from 'ad.cgx'
-      //adv = AD_in (0);
+      adv = AD_in (0);
       len = (uint32_t)sprintf (buf, &env[1], adv);
       break;
 
     case 'y':
       // Button state from 'button.cgx'
-      //len = (uint32_t)sprintf (buf, "<checkbox><id>button%c</id><on>%s</on></checkbox>",
-                               //env[1], (get_button () & (1 << (env[1]-'0'))) ? "true" : "false");
+      //len = (uint32_t)sprintf (buf, "<checkbox><id>button%c</id><on>%s</on></checkbox>", env[1], (get_button () & (1 << (env[1]-'0'))) ? "true" : "false");
       break;
   }
   return (len);

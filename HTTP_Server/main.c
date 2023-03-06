@@ -39,6 +39,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32f4xx_hal.h"
+#include "rl_net.h"                     // Keil.MDK-Pro::Network:CORE
+#include "LEDS_STM32F429ZI.h"
+#include "LCD_STM32F429ZI.h"
+#include "ADC_STM32F429ZI.h"
 
 #ifdef RTE_CMSIS_RTOS2_RTX5
 /**
@@ -76,8 +81,7 @@ uint32_t HAL_GetTick (void) {
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
-static void SystemClock_Config(void);
-static void Error_Handler(void);
+
 
 /* Private functions ---------------------------------------------------------*/
 /**
@@ -87,7 +91,6 @@ static void Error_Handler(void);
   */
 int main(void)
 {
-
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, Flash preread and Buffer caches
        - Systick timer is configured by default as source of time base, but user 
@@ -97,15 +100,22 @@ int main(void)
              handled in milliseconds basis.
        - Low Level Initialization
      */
-  HAL_Init();
-
-  /* Configure the system clock to 168 MHz */
-  SystemClock_Config();
+  
+	
+	/*INICIALIZACIONES*/
+	HAL_Init();
+	SystemClock_Config();													/* Configure the system clock to 168 MHz */
   SystemCoreClockUpdate();
-
-  /* Add your application code here
-     */
-
+	LED_Initialize();
+  ADC1_Initialize();
+	LCD_Initialize();
+	
+	/* Iniciamos el LCD */
+	LCD_Clean();
+	LCD_WriteSentence ("    BIENVENIDO    ",1);
+	LCD_WriteSentence ("  HTTP SERVER: STM  ",2);
+	
+	
 #ifdef RTE_CMSIS_RTOS2
   /* Initialize CMSIS-RTOS2 */
   osKernelInitialize ();
@@ -122,6 +132,10 @@ int main(void)
   {
   }
 }
+
+
+
+
 
 /**
   * @brief  System Clock Configuration

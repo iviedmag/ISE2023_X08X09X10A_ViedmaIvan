@@ -6,19 +6,17 @@
  * Purpose: HTTP Server example
  *----------------------------------------------------------------------------*/
 
-#include <stdio.h>
-
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
-#include "rl_net.h"                     // Keil.MDK-Pro::Network:CORE
-
 #include "stm32f4xx_hal.h"              // Keil::Device:STM32Cube HAL:Common
-#include "Board_LED.h"                  // ::Board Support:LED
-#include "Board_Buttons.h"              // ::Board Support:Buttons
-#include "Board_ADC.h"                  // ::Board Support:A/D Converter
-#include "Board_GLCD.h"                 // ::Board Support:Graphic LCD
-#include "GLCD_Config.h"                // Keil.MCBSTM32F400::Board Support:Graphic LCD
-
+#include "rl_net.h"                     // Keil.MDK-Pro::Network:CORE
+#include "LEDS_STM32F429ZI.h"
+#include "LCD_STM32F429ZI.h"
+#include "ADC_STM32F429ZI.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+	
 // Main stack size must be multiple of 8 Bytes
 #define APP_MAIN_STK_SZ (1024U)
 uint64_t app_main_stk[APP_MAIN_STK_SZ / 8];
@@ -27,22 +25,17 @@ const osThreadAttr_t app_main_attr = {
   .stack_size = sizeof(app_main_stk)
 };
 
-extern GLCD_FONT GLCD_Font_6x8;
-extern GLCD_FONT GLCD_Font_16x24;
+extern uint16_t AD_in (uint32_t ch);
+extern void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32_t len);
+//extern uint8_t get_button (void);
 
-extern uint16_t AD_in          (uint32_t ch);
-extern uint8_t  get_button     (void);
-extern void     netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32_t len);
 
-extern bool LEDrun;
-extern char lcd_text[2][20+1];
+bool LEDrun;
+char lcd_text[2][20+1];
 
 extern osThreadId_t TID_Display;
 extern osThreadId_t TID_Led;
 
-bool LEDrun;
-char lcd_text[2][20+1] = { "LCD line 1",
-                           "LCD line 2" };
 
 /* Thread IDs */
 osThreadId_t TID_Display;
@@ -52,27 +45,27 @@ osThreadId_t TID_Led;
 static void BlinkLed (void *arg);
 static void Display  (void *arg);
 
-//__NO_RETURN void app_main (void *arg);
+__NO_RETURN void app_main (void *arg);
 
-                         
-                           
+                                           
 //Read analog inputs 
 uint16_t AD_in (uint32_t ch) {
   int32_t val = 0;
 
   if (ch == 0) {
-    ADC_StartConversion();
-    while (ADC_ConversionDone () < 0);
-    val = ADC_GetValue();
+    ADC1_StartConversion();
+    while (ADC1_ConversionDone () < 0);
+    val = ADC1_GetValue();
   }
   return ((uint16_t)val);
 }
 
 
-/* Read digital inputs */
+/* Read digital inputs 
 uint8_t get_button (void) {
   return ((uint8_t)Buttons_GetState ());
 }
+*/
 
 /* IP address change notification */
 void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32_t len) {
@@ -87,56 +80,30 @@ void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32
   }
 }
 
-/*----------------------------------------------------------------------------
-  Thread 'Display': LCD display handler
- *---------------------------------------------------------------------------*/
 static __NO_RETURN void Display (void *arg) {
-  static uint8_t ip_addr[NET_ADDR_IP6_LEN];
-  static char    ip_ascii[40];
-  static char    buf[24];
-  uint32_t x = 0;
-
-  (void)arg;
-
-  GLCD_Initialize         ();
-  GLCD_SetBackgroundColor (GLCD_COLOR_BLUE);
-  GLCD_SetForegroundColor (GLCD_COLOR_WHITE);
-  GLCD_ClearScreen        ();
-  GLCD_SetFont            (&GLCD_Font_16x24);
-  GLCD_DrawString         (x*16U, 1U*24U, "       MDK-MW       ");
-  GLCD_DrawString         (x*16U, 2U*24U, "HTTP Server example ");
-
-  GLCD_DrawString (x*16U, 4U*24U, "IP4:Waiting for DHCP");
-
-  /* Print Link-local IPv6 address */
-  netIF_GetOption (NET_IF_CLASS_ETH,
-                   netIF_OptionIP6_LinkLocalAddress, ip_addr, sizeof(ip_addr));
-
-  netIP_ntoa(NET_ADDR_IP6, ip_addr, ip_ascii, sizeof(ip_ascii));
-
-  sprintf (buf, "IP6:%.16s", ip_ascii);
-  GLCD_DrawString ( x    *16U, 5U*24U, buf);
-  sprintf (buf, "%s", ip_ascii+16);
-  GLCD_DrawString ((x+10U)*16U, 6U*24U, buf);
-
+	
+//	static uint8_t ip_addr[NET_ADDR_IP6_LEN];          // Contiene la direccion IP
+//  static char    ip_ascii[40];											 //  Búfer temporal para almacenar la dirección IP convertida en formato de cadena antes de mostrarla en la pantalla
+  static char    lcd_buf[24];												   //  búfer temporal para almacenar una cadena de caracteres antes de mostrarla en la pantalla LCD
+	
+	(void)arg;
+	
+	 //osThreadFlagsSet (TID_Display, 0x01);
+	
   while(1) {
-    /* Wait for signal from DHCP */
+		
+		/* ESPERA DE LA SIGNAL 0X01 CUANDO EL NAVEGADOR ACTUALICE LA INFORMACION DEL LCD */
     osThreadFlagsWait (0x01U, osFlagsWaitAny, osWaitForever);
+		
+		sprintf (lcd_buf, "%-20s", lcd_text[0]);
+	  LCD_WriteSentence(lcd_buf, 1);
+			
+		sprintf (lcd_buf, "%-20s", lcd_text[1]);
+		LCD_WriteSentence(lcd_buf, 2);
+			
+		LCD_Reset_Buffer();
 
-    /* Retrieve and print IPv4 address */
-    netIF_GetOption (NET_IF_CLASS_ETH,
-                     netIF_OptionIP4_Address, ip_addr, sizeof(ip_addr));
-
-    netIP_ntoa (NET_ADDR_IP4, ip_addr, ip_ascii, sizeof(ip_ascii));
-
-    sprintf (buf, "IP4:%-16s",ip_ascii);
-    GLCD_DrawString (x*16U, 4U*24U, buf);
-
-    /* Display user text lines */
-    sprintf (buf, "%-20s", lcd_text[0]);
-    GLCD_DrawString (x*16U, 7U*24U, buf);
-    sprintf (buf, "%-20s", lcd_text[1]);
-    GLCD_DrawString (x*16U, 8U*24U, buf);
+		
   }
 }
 
@@ -144,13 +111,16 @@ static __NO_RETURN void Display (void *arg) {
   Thread 'BlinkLed': Blink the LEDs on an eval board
  *---------------------------------------------------------------------------*/
 static __NO_RETURN void BlinkLed (void *arg) {
-  const uint8_t led_val[16] = { 0x48,0x88,0x84,0x44,0x42,0x22,0x21,0x11,
-                                0x12,0x0A,0x0C,0x14,0x18,0x28,0x30,0x50 };
+const uint8_t led_val[7] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07};
   uint32_t cnt = 0U;
+//  static float adv;
+//	char frase[60];
+//	static double conversion = 0;
 
   (void)arg;
 
-  LEDrun = true;
+  LEDrun = false;
+	
   while(1) {
     /* Every 100 ms */
     if (LEDrun == true) {
@@ -160,7 +130,20 @@ static __NO_RETURN void BlinkLed (void *arg) {
       }
     }
     osDelay (100);
+		
+//		/*PRUEBA ERROR*/
+//		adv = ADC_getVoltage();
+//		//conversion = (adv*3.3f)/4096;
+//    
+//		sprintf (frase,"ADC -> %f", adv);
+//		LCD_WriteSentence (frase,1);
+//		//sprintf (frase,"ADC -> %f", conversion);
+//		//LCD_WriteSentence (frase,2);
+//		LCD_Reset_Buffer();
+//		osDelay(1000);
+		
   }
+	
 }
 
 /*----------------------------------------------------------------------------
@@ -168,12 +151,8 @@ static __NO_RETURN void BlinkLed (void *arg) {
  *---------------------------------------------------------------------------*/
 __NO_RETURN void app_main (void *arg) {
   (void)arg;
-
-  LED_Initialize();
-  Buttons_Initialize();
-  ADC_Initialize();
-
-  netInitialize ();
+	
+	netInitialize ();
 
   TID_Led     = osThreadNew (BlinkLed, NULL, NULL);
   TID_Display = osThreadNew (Display,  NULL, NULL);

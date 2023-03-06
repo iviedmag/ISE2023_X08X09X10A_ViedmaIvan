@@ -37,9 +37,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
-
 #ifdef _RTE_
 #include "RTE_Components.h"             // Component selection
 #endif
@@ -55,6 +52,10 @@ extern const osThreadAttr_t app_main_attr;
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 extern void app_main (void *arg);
+
+/* Private function prototypes -----------------------------------------------*/
+static void SystemClock_Config(void);
+static void Error_Handler(void);
 
 #endif /* __MAIN_H */
 
