@@ -217,5 +217,3 @@ void RTC_CalendarShow(uint8_t *showtime, uint8_t *showdate)
 }
 
 
-void HAL_RTC_AlarmBEventCallback(
-

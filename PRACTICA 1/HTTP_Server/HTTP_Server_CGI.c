@@ -21,7 +21,7 @@
 #endif
 
 // http_server.c
-extern uint16_t AD_in (uint32_t ch);
+extern uint16_t AD1_in (uint16_t );
 extern uint8_t  get_button (void);
 
 extern bool LEDrun;
@@ -344,11 +344,11 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
       // AD Input from 'ad.cgi'
       switch (env[2]) {
         case '1':
-          adv = AD_in (0);
+          adv = AD1_in (10);
           len = (uint32_t)sprintf (buf, &env[4], adv);
           break;
         case '2':
-          //len = (uint32_t)sprintf (buf, &env[4], (double)((float)adv*3.3f)/4096);
+          len = (uint32_t)sprintf (buf, &env[4], (double)((float)adv*3.3f)/4096);
           break;
         case '3':
           adv = (adv * 100) / 4096;
@@ -359,7 +359,7 @@ uint32_t netCGI_Script (const char *env, char *buf, uint32_t buflen, uint32_t *p
 
     case 'x':
       // AD Input from 'ad.cgx'
-      adv = AD_in (0);
+      adv = AD1_in (10);
       len = (uint32_t)sprintf (buf, &env[1], adv);
       break;
 

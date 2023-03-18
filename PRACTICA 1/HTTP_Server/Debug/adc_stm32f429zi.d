@@ -1,4 +1,6 @@
 .\debug\adc_stm32f429zi.o: ADC_STM32F429ZI.c
+.\debug\adc_stm32f429zi.o: ADC_STM32F429ZI.h
+.\debug\adc_stm32f429zi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\debug\adc_stm32f429zi.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal.h
 .\debug\adc_stm32f429zi.o: .\RTE\Device\STM32F429ZITx\stm32f4xx_hal_conf.h
 .\debug\adc_stm32f429zi.o: .\RTE\_Debug\RTE_Components.h
@@ -7,7 +9,6 @@
 .\debug\adc_stm32f429zi.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\debug\adc_stm32f429zi.o: C:\Users\Ivied\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f429xx.h
 .\debug\adc_stm32f429zi.o: C:\Users\Ivied\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include\core_cm4.h
-.\debug\adc_stm32f429zi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\debug\adc_stm32f429zi.o: C:\Users\Ivied\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include\cmsis_version.h
 .\debug\adc_stm32f429zi.o: C:\Users\Ivied\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include\cmsis_compiler.h
 .\debug\adc_stm32f429zi.o: C:\Users\Ivied\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include\cmsis_armcc.h

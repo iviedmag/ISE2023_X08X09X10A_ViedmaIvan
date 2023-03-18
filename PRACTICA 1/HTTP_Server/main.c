@@ -108,13 +108,15 @@ int main(void)
   SystemCoreClockUpdate();
 	LED_Initialize();
   ADC1_Initialize();
+	ADC1_Init_Single_Conversion();
 	LCD_Initialize();
 	
 	/* Iniciamos el LCD */
 	LCD_Clean();
 	LCD_WriteSentence ("    BIENVENIDO    ",1);
 	LCD_WriteSentence ("  HTTP SERVER: STM  ",2);
-	
+	osDelay(500);
+	LCD_Clean();
 	
 #ifdef RTE_CMSIS_RTOS2
   /* Initialize CMSIS-RTOS2 */
@@ -132,8 +134,6 @@ int main(void)
   {
   }
 }
-
-
 
 
 
