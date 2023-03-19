@@ -15,6 +15,7 @@
  /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "LCD_STM32F429ZI.h"
+#include "LEDS_STM32F429ZI.h"
 #include <stdio.h>
 
 /* Private define ------------------------------------------------------------*/
@@ -51,7 +52,7 @@ extern void RTC_Initialize(void);
   * @param  None
   * @retval None
   */
-static void RTC_CalendarConfig(void);
+extern void RTC_CalendarConfig(void);
 
 /**
   * @brief  Display the current time and date.

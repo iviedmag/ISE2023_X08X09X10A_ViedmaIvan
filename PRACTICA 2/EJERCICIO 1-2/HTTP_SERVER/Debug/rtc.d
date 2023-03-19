@@ -45,3 +45,4 @@
 .\debug\rtc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\debug\rtc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\debug\rtc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\debug\rtc.o: LEDS_STM32F429ZI.h

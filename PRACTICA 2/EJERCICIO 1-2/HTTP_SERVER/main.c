@@ -109,8 +109,11 @@ int main(void)
   SystemCoreClockUpdate();
 	LED_Initialize();
   ADC1_Initialize();
+	ADC1_Init_Single_Conversion();
 	LCD_Initialize();
 	RTC_Initialize();
+	
+	
 	
 	
 #ifdef RTE_CMSIS_RTOS2
@@ -129,8 +132,6 @@ int main(void)
   {
   }
 }
-
-
 
 
 

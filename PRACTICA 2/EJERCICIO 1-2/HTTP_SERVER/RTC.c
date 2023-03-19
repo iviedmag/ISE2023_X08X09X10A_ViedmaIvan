@@ -7,6 +7,29 @@
 
 /* Private typedef -----------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
+extern osThreadId_t TID_Led;
+
+// Rutina de interrupción de la alarma RTC
+void RTC_Alarm_IRQHandler(void)
+{
+	HAL_RTC_AlarmIRQHandler(&hrtc);
+}
+
+//// Rutina de interrupción del temporizador RTC
+//void RTC_WKUP_IRQHandler(void)
+//{
+//  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
+//}
+
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
+{
+	osThreadFlagsSet (TID_Led, 0x01);
+}
+
+//void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc)
+//{
+//  osThreadFlagsSet (TID_Led, 0x01);
+//}
 
 /**
   * @brief RTC MSP Initialization 
@@ -83,6 +106,7 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef *hrtc)
 */
 void RTC_Initialize(void)
 {
+	RTC_AlarmTypeDef sAlarm;
 	
 	/* Inicialización del RTC */
 	
@@ -105,7 +129,7 @@ void RTC_Initialize(void)
   hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
   __HAL_RTC_RESET_HANDLE_STATE(&hrtc);																					// Asegurarse de que todas las estructuras internas del RTC están en un estado de reinicio
 	
-	//HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR1, 0);																
+	HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR1, 0);																
 	
   if (HAL_RTC_Init(&hrtc) != HAL_OK)
   {
@@ -146,7 +170,37 @@ void RTC_Initialize(void)
     /* Clear source Reset Flag */
     __HAL_RCC_CLEAR_RESET_FLAGS();
   }
+
+	// Configurar la alarma
+  sAlarm.AlarmTime.Hours = 0x00;					
+  sAlarm.AlarmTime.Minutes = 0x00;																																													// Se establece la hora de la alarma para que se active cada minuto
+  sAlarm.AlarmTime.Seconds = 0x05;
+	sAlarm.AlarmTime.SubSeconds = 0x00;
+	sAlarm.AlarmTime.TimeFormat = RTC_HOURFORMAT_24;
+	sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS|RTC_ALARMMASK_MINUTES;																		// Se establece que la alarma no tiene máscara, lo que significa que se activará en cualquier momento de la hora, minuto y segundo configurados en la alarma
+	sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;																																		// Se establece la máscara de sub-segundo para que la alarma se active en cualquier valor de sub-segundo
+	sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;																																// Se establece que la alarma se activará solo en una fecha (no en un día de la semana) 
+  sAlarm.AlarmDateWeekDay = 0x01;																																														// Se establece el valor de la fecha en 0x01 (es decir, el primer día del mes)
+  sAlarm.Alarm = RTC_ALARM_A;																																																// Establecemos la Alarma como ALARMA A
+  
+	if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)																												// Configurar la alarma en el RTC y habilitar la interrupción de alarma. La función toma tres argumentos: el manejador del RTC (&hrtc), la estructura de alarma (&sAlarm), y el formato de tiempo utilizado (RTC_FORMAT_BIN). El último argumento especifica que el formato de tiempo es binario.
+	{
+		Error_Handler();
+	}								
+
+//	// Configurar el temporizador RTC
+//	uint32_t WakeUpCounter = 10 * 32768 - 1; // 10 segundos a 32768 Hz
+//	HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, WakeUpCounter, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
 	
+	// Habilitar la interrupción de la alarma A del RTC
+  HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
+	
+//	// Habilitar la interrupción del temporizador RTC en el NVIC
+//	HAL_NVIC_SetPriority(RTC_WKUP_IRQn, 0, 0);
+//	HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);
 }	
 	
 /**
@@ -154,7 +208,7 @@ void RTC_Initialize(void)
   * @param  None
   * @retval None
   */
-static void RTC_CalendarConfig(void)
+void RTC_CalendarConfig(void)
 {
   RTC_DateTypeDef sdatestructure;
   RTC_TimeTypeDef stimestructure;

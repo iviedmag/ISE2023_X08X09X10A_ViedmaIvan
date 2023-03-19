@@ -104,6 +104,7 @@ int32_t LED_SetOut (uint32_t val) {
   return 0;
 }
 
+
 /**
   \fn          uint32_t LED_GetCount (void)
   \brief       Get number of LEDs

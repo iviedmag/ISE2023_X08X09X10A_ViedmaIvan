@@ -27,7 +27,7 @@ const osThreadAttr_t app_main_attr = {
   .stack_size = sizeof(app_main_stk)
 };
 
-extern uint16_t AD_in (uint32_t ch);
+extern uint16_t AD1_in (uint32_t ch);
 extern void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32_t len);
 //extern uint8_t get_button (void);
 
@@ -53,16 +53,21 @@ static void Display  (void *arg);
 
 __NO_RETURN void app_main (void *arg);
 
-                                           
-//Read analog inputs 
-uint16_t AD_in (uint32_t ch) {
-  int32_t val = 0;
 
-  if (ch == 0) {
-    ADC1_StartConversion();
-    while (ADC1_ConversionDone () < 0);
-    val = ADC1_GetValue();
-  }
+//Read analog inputs 
+uint16_t AD1_in (uint32_t ch) {
+  int32_t val = 0;
+	
+	val = ADC1_getVoltage(ch);
+  
+  return ((uint16_t)val);
+}
+
+uint16_t AD2_in (uint32_t ch) {
+  int32_t val = 0;
+	
+	val = ADC2_getVoltage(ch);
+  
   return ((uint16_t)val);
 }
 
@@ -74,17 +79,17 @@ uint8_t get_button (void) {
 */
 
 /* IP address change notification */
-void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32_t len) {
+//void netDHCP_Notify (uint32_t if_num, uint8_t option, const uint8_t *val, uint32_t len) {
 
-  (void)if_num;
-  (void)val;
-  (void)len;
+//  (void)if_num;
+//  (void)val;
+//  (void)len;
 
-  if (option == NET_DHCP_OPTION_IP_ADDRESS) {
-    /* IP address change, trigger LCD update */
-    osThreadFlagsSet (TID_Display, 0x01);
-  }
-}
+//  if (option == NET_DHCP_OPTION_IP_ADDRESS) {
+//    /* IP address change, trigger LCD update */
+//    osThreadFlagsSet (TID_Display, 0x01);
+//  }
+//}
 
 /*Display para el RTC */
 static __NO_RETURN void Display (void *arg) {
@@ -96,15 +101,37 @@ static __NO_RETURN void Display (void *arg) {
 	LCD_WriteSentence ("    BIENVENIDO    ",1);
 	LCD_WriteSentence ("  HTTP SERVER: STM  ",2);
 	LCD_Reset_Buffer();
-	osDelay(1000);
-	
+	HAL_Delay(5000);
+  
+  LCD_Clean();
+  RTC_CalendarConfig();
+		
   while(1) {
-
+		
 		RTC_CalendarShow(RTC_Time,RTC_Date);
 		LCD_RTC_Show_DT(RTC_Time,RTC_Date);
 		LCD_Reset_Buffer();
+		HAL_Delay (100);	
+  }
+}
+
+/*Leds para el RTC*/
+
+static __NO_RETURN void BlinkLed (void *arg) {
+
+  (void)arg;
+
+  while(1) {
 		
-		osDelay (100);	
+		// ESPERA DE LA SIGNAL 0X01 CUANDO EL RTC CUENTE CADA MINUTO
+    osThreadFlagsWait (0x01U, osFlagsWaitAny, osWaitForever);
+		
+		for(int i=0; i<10;i++){  // Pasa cada 500 ms, debe dar 10 vueltas
+      LED_On(0);
+			HAL_Delay(500);
+			LED_Off(0);
+			HAL_Delay(500);
+    }
   }
 }
 
@@ -138,22 +165,17 @@ static __NO_RETURN void Display (void *arg) {
 }
 */
 
-/*----------------------------------------------------------------------------
-  Thread 'BlinkLed': Blink the LEDs on an eval board
- *---------------------------------------------------------------------------*/
+/*Leds para el servidor*/
+/*
 static __NO_RETURN void BlinkLed (void *arg) {
 const uint8_t led_val[7] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07};
   uint32_t cnt = 0U;
-//  static float adv;
-//	char frase[60];
-//	static double conversion = 0;
 
   (void)arg;
 
   LEDrun = false;
 	
   while(1) {
-    /* Every 100 ms */
     if (LEDrun == true) {
       LED_SetOut (led_val[cnt]);
       if (++cnt >= sizeof(led_val)) {
@@ -162,20 +184,10 @@ const uint8_t led_val[7] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07};
     }
     osDelay (100);
 		
-//		/*PRUEBA ERROR*/
-//		adv = ADC_getVoltage();
-//		//conversion = (adv*3.3f)/4096;
-//    
-//		sprintf (frase,"ADC -> %f", adv);
-//		LCD_WriteSentence (frase,1);
-//		//sprintf (frase,"ADC -> %f", conversion);
-//		//LCD_WriteSentence (frase,2);
-//		LCD_Reset_Buffer();
-//		osDelay(1000);
-		
   }
 	
 }
+*/
 
 /*----------------------------------------------------------------------------
   Main Thread 'main': Run Network
